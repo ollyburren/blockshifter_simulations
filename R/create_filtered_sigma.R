@@ -1,4 +1,5 @@
 library(GenomicRanges)
+library(snpStats)
 library(corpcor)
 library(mvtnorm)
 library(optparse)
@@ -24,6 +25,45 @@ make_simple_contact_file<-function(){
     contacts.f<-subset(contacts.f,oeChr=='1' & baitChr=='1')
     contacts.gr<-with(contacts.f,GRanges(seqnames=Rle(oeChr),ranges=IRanges(start=oeStart,end=oeEnd),test=test,control=control))
     save(contacts.gr,file=file.path(DATA.DIR,'pirs.RData'))
+}
+
+attempt.pos.def<-function(mat,diag.val=1.0001){
+    print(paste("diag.val",diag.val))
+    if(!is(mat,"Matrix"))
+        stop("mat is not a Matrix!")
+    if(diag.val >= 1.1){
+        print("Matrix is not positive definite. Finding closest approximation..")
+        diag(mat)<-1
+        return(as(make.positive.definite(mat),"Matrix"))
+    }
+    diag(mat)<-diag.val
+    if(is.positive.definite(mat,,method="chol")==FALSE){
+        new.diag<-signif(1+((diag.val-trunc(diag.val))*10))
+        mat<-attempt.pos.def(mat,new.diag)
+    }else{
+        return(mat)
+    }
+}
+
+mvs.sigma.r2<-function(r2){
+    diag(r2)<-1
+    if(!is.positive.definite(r2,,method="chol")){
+        #this recurses through various values of diag if we exceed 1 then
+        #we compute the closest matrix that is positive definite.
+        r2<-attempt.pos.def(r2)
+    }
+    r2
+}
+
+mvs.perm<-function(sigma,n=1000){
+    if(!is.matrix(sigma))
+        stop("sigma parameter is not a matrix")		
+    if(!is.positive.definite(sigma,,method="chol"))
+        stop("sigma is not positive definite")
+    ## in original paper method="chol" was not defined so I assume used eigen default
+    ## this is slower than the choleski decomp ! Perhaps we should contact the author ?
+    rd<-rmvnorm(n,mean=rep(0,ncol(sigma)),sigma=sigma,method="chol")
+    t(rd)
 }
 
 option_list = list(
