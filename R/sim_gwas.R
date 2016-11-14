@@ -42,7 +42,8 @@ sim_alt<-function(s,gt,sigma,type=c('null','test','control','pir','no.pir'),ncp=
 
 option_list = list(
     make_option(c("-f","--file"),type="character",default = NULL, help = "Input RData object see - create_filtered_sigma.R"),
-    make_option(c("-o","--out_dir"),type="character",default = NULL, help = "Directory to store result data objects")
+    make_option(c("-o","--out_dir"),type="character",default = NULL, help = "Directory to store result data objects"),
+    make_option(c("-i","--it_no"),type="numeric",default = NULL, help = "iteration number for perms")
 )
 
 opt_parser = OptionParser(option_list = option_list)
@@ -70,8 +71,8 @@ p<-lapply(types,function(t){
     
 })
 names(p)<-types
-save(p,file=file.path(opt$out_dir,basename(opt$file)))
-message(paste("Written",file.path(opt$out_dir,basename(opt$file))))
+save(p,file=file.path(opt$out_dir,paste(opt$it_no,basename(opt$file),sep='_')))
+message(paste("Written",file.path(opt$out_dir,paste(opt$it_no,basename(opt$file),sep='_'))))
 
 
 ## TEST CODE FOR DEBUGGING sim_alt function not run except for debugging purposes
