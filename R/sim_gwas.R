@@ -5,7 +5,7 @@ library(optparse)
 ## HARDCODED PARAMS
 DATA.DIR<-'/home/ob219/scratch/bs_sim/support' # where sigma + support data is
 ncp<-80 # non centrality parameter for computing mean (sqrt(ncp)) of MVN under alternative
-n.perms<-20 # number of causal variants to simulate
+n.perms<-200 # number of causal variants to simulate
 types<-c('null','no.pir','pir','test') # feature spike ins to simulate
 
 sim_alt<-function(s,gt,sigma,type=c('null','test','control','pir','no.pir'),ncp=80,n=1){
