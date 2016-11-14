@@ -67,7 +67,7 @@ p<-lapply(types,function(t){
         mat[,i]<-tmp$rd
         cv.vec[i]<-tmp$cv.pos
     }
-    list(perms=cbind(chr='1',b$support[b$support$pir,c('start','end')],mat),caus.var.pos<-cv.vec)
+    list(perms=cbind(chr='1',b$support[b$support$pir,c('start','end')],mat),caus.var.pos=cv.vec)
     
 })
 names(p)<-types
