@@ -35,12 +35,37 @@ create_perm_support_df<-function(d){
     return(chk.res)
 }
 
+## robustly sum logs
+logsum <- function(x) {
+    my.max <- max(x) ##take out the maximum value in log form)
+    my.res <- my.max + log(sum(exp(x - my.max )))
+    return(my.res)
+}
+
+## compute variance shrinkage for case control study
+Var.data.cc <- function(f, N, s) {
+    1 / (2 * N * f * (1 - f) * s * (1 - s))
+}
+
+## compute approx bayes factors and resultant posterior probabilities
+## based on the assumption of one causal variant in a region
+approx.bf.p <- function(z,f,type, N, s,pi_i,suffix=NULL) {
+    sd.prior <- 0.2
+    V <- Var.data.cc(f, N, s)
+    ## Shrinkage factor: ratio of the prior variance to the total variance
+    r <- sd.prior^2 / (sd.prior^2 + V)
+    ## Approximate BF  # I want ln scale to compare in log natural scale with LR diff
+    lABF = 0.5 * (log(1-r) + (r * z^2))
+    sBF <- logsum(lABF + log(pi_i))
+    exp(lABF + log(pi_i))/(exp(sBF) + 1)
+}
+
 
 ## MAIN
 ps.file<-'/home/ob219/scratch/bs_sim/support/perm_support.RData'
-if(!file.exists('/home/ob219/scratch/bs_sim/support')){
+if(!file.exists(ps.file)){
     chk.res<-create_perm_support_df(DATA.DIR)
-    save(chk.res,ps.file)
+    save(chk.res,file=ps.file)
 }else{
     chk.res<-get(load(ps.file))
 }
@@ -76,6 +101,8 @@ if(is.null(opt$it_no)){
     stop("please supply an iteration number (or block of perms)",call.=FALSE)
 }
 
+opt<-list(it_no=1,out_dir='/home/ob219/scratch/bs_sim/tmp',blockno=50)
+
 ## 8 regions don't contain any test but that is not important for
 ## initial analysis
 
@@ -85,9 +112,12 @@ if(is.null(opt$it_no)){
 
 # do 200 at a time
 # number of blocks
-m<-opt$it_no
-it_no<-opt$itno
+m<-opt$blockno
+it_no<-opt$it_no
 no.perms.it<-200
+N.ok<-14361+43923
+case.ratio<-14361/N.ok
+support.dir<-'/home/ob219/scratch/bs_sim/sigma_pir/'
 
 bf<-subset(chk.res,itno==it_no)
 bf<-bf[order(as.numeric(bf$start)),]
@@ -107,15 +137,18 @@ all.perms<-lapply(recipe$filename,function(f){
         sel[i]
         t[[sel[i]]]$perms[i+3]
     }))
+    ## conver to Posterior Probabilities for this we need to load support file which has the MAF
+    ## first load in the support object
+    support.file<-file.path(support.dir,sub("[^\\_]+\\_(.*)","\\1",f))
+    supp<-get(load(support.file))     
+    bp<-apply(bp,2,approx.bf.p,f=supp$support[supp$support$pir,]$MAF,type='CC',N=N.ok,s=case.ratio,pi_i=1e-4)
+    if(sum(supp$support$pir)==1)
+	bp<-matrix(bp,ncol=no.perms.it)
+    bp<-data.table(bp)
+    setnames(bp,paste0('V',1:no.perms.it))
     bp<-cbind(t$null$perms[,1:3],bp)
 })
 perms<-rbindlist(all.perms)
 of<-paste0(paste(it_no,m,sep='-'),'.RData')
 save(perms,file=file.path(opt$out_dir,of))
 message(paste("Written",file.path(opt$out_dir,of)))
-
-
-
-
-
-
