@@ -17,6 +17,12 @@ sim_alt<-function(s,gt,sigma,type=c('null','test','control','pir','no.pir'),ncp=
     else if(type=='no.pir'){
         caus.var<-sample(which(!b$support[['pir']]),1)
     }else{
+	## catch instances where a particular type is not found in the region
+	## in these cases return NA
+	if(sum(b$support[[type]])==0){
+		message(paste(">>>>>",type,"is NA"))
+		return(NA)
+	}
         caus.var<-sample(which(b$support[[type]]),1)
     }
     idx.pir.snps<-which(s$pir)
@@ -57,13 +63,18 @@ if(is.null(opt$file)){
 
 
 b<-get(load(opt$file))
-
+if(sum(b$support$pir)==0)
+    stop(paste("No PIRs overlap this segment:",basename(opt$file)))
 p<-lapply(types,function(t){
     message(t)
     mat<-matrix(NA,nrow=nrow(b$sigma),ncol=n.perms)
     cv.vec<-numeric(length = n.perms)
     for(i in 1:n.perms){
         tmp<-sim_alt(b$support,b$gt,b$sigma,t,ncp=ncp)
+	#if there is a type that has no overlaps we
+	#get NA need to catch this and return a null data structure	
+	if(is.na(tmp))
+		return(list(perms='NA',caus.var.pos='NA'))
         mat[,i]<-tmp$rd
         cv.vec[i]<-tmp$cv.pos
     }
