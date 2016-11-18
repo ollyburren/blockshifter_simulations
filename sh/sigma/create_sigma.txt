@@ -1,0 +1,2 @@
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/create_filtered_sigma.R  -f /scratch/ob219/bs_sim/support/chr1_EUR_LD//1:187438635-188757435.RData -o /scratch/ob219/bs_sim/sigma_pir/
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/create_filtered_sigma.R  -f /scratch/ob219/bs_sim/support/chr1_EUR_LD//1:79663268-81159163.RData -o /scratch/ob219/bs_sim/sigma_pir/

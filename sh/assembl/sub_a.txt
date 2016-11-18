@@ -1,0 +1,10 @@
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 1
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 2
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 3
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 4
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 5
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 6
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 7
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 8
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 9
+Rscript --vanilla /scratch/ob219/bs_sim/blockshifter_simulations/R/assemble_sim_gwas.R  -b 50 -o /scratch/ob219/bs_sim/50_pir_nopir/ -i 10
