@@ -1,3 +1,4 @@
+library(parallel)
 library(data.table)
 library(GenomicRanges)
 library(optparse)
@@ -40,7 +41,7 @@ get_canned_contact_file<-function(){
     library(data.table)
     test.set<-c('Total_CD4_Activated','Total_CD4_NonActivated')
     control.set<-c('Megakaryocytes','Erythroblasts')
-    contacts<-fread("/Users/oliver/DATA/JAVIERRE_GWAS/chic/merged_samples_12Apr2015_full_denorm_bait2baits_e75.tab")
+    contacts<-fread("/scratch/ob219/bs_sim/support/merged_samples_12Apr2015_full_denorm_bait2baits_e75.tab")
     ## Need to make sure that we only consider unique contacts (i.e. don't double count where a bait overlaps more than one TSS)
     ## not sure that this is a problem given that we collapse oeID's later but do this just in case.
     contacts$uid<-with(contacts,paste(baitID,oeID,sep=":"))
@@ -96,6 +97,7 @@ blockshifter <-
     if(length(overlap.idx)>0)
       det.gr[overlap.idx,]$test<-FALSE
   }
+  message(paste("Considering ",length(det.gr),"PIRs"))
   
   det.gr$test<-!det.gr$control
   
@@ -373,10 +375,10 @@ f<-opt$perm_file
 contacts.gr<-get(load('/home/ob219/scratch/bs_sim/support/blockshifter_test_contact.RData'))
 gw.p<-get(load(f))
 gw.gr<-with(gw.p,GRanges(seqnames=Rle('1'),ranges=IRanges(start=start,end = end)))
-res<-lapply(names(gw.p)[grep('^V',names(gw.p))],function(col){
+res<-mclapply(names(gw.p)[grep('^V',names(gw.p))],function(col){
   gw.gr$ppi<-gw.p[[col]]
   blockshifter(contacts.gr,gw.gr)
-})
+},mc.cores=16)
 bs<-rbindlist(res)
 output.file<-file.path(OUT.DIR,basename(f))
 save(bs,file=output.file)

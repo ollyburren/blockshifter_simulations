@@ -101,7 +101,7 @@ if(is.null(opt$it_no)){
     stop("please supply an iteration number (or block of perms)",call.=FALSE)
 }
 
-opt<-list(it_no=1,out_dir='/home/ob219/scratch/bs_sim/tmp',blockno=50)
+#opt<-list(it_no=1,out_dir='/home/ob219/scratch/bs_sim/tmp',blockno=50)
 
 ## 8 regions don't contain any test but that is not important for
 ## initial analysis
